@@ -1,0 +1,8 @@
+{
+  "name": "Remix Savio – ALEPA 11.0",
+  "description": "Plataforma de estudos para o concurso ALEPA 2026 (Cargo 03 – Assessoramento Legislativo – Técnico Legislativo · PL.AL.102, Banca Fundação CETAP), com cronograma diário de 2h, checklist do edital, simulados, caderno de erros e biblioteca de materiais.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

@@ -1,0 +1,341 @@
+# PROMPT MESTRE — AUDITORIA, CORREÇÃO, MODERNIZAÇÃO E COMPLEMENTAÇÃO DO MEU CAMPUS ALEPA 2026
+
+## 1. MISSÃO PRINCIPAL
+Atue como engenheiro de software sênior, arquiteto de sistemas, especialista em React, TypeScript, Vite, Firebase, segurança da informação, UX/UI, PWA, responsividade mobile e desenvolvimento de plataformas educacionais. Sua missão é realizar uma auditoria técnica e funcional completa do repositório **Meu Campus ALEPA 2026**, corrigir problemas encontrados, modernizar a interface, complementar funcionalidades e validar o resultado. O objetivo é transformar o projeto em uma plataforma educacional estável, intuitiva, responsiva, segura e funcional, preservando sua identidade, seus dados e todos os recursos que já funcionam.
+
+**REGRA FUNDAMENTAL:** não reconstrua o projeto do zero, não substitua tecnologias sem justificativa e não elimine funcionalidades existentes. Trabalhe sobre a arquitetura atual, reaproveitando componentes, serviços, contextos, estruturas de dados e integrações existentes. Antes de alterar qualquer arquivo, compreenda sua função e suas dependências.
+
+## 2. INSPEÇÃO OBRIGATÓRIA DO REPOSITÓRIO
+Examine o projeto completo antes de realizar alterações. Analise estrutura de diretórios, dependências, configurações, componentes, páginas, serviços, hooks, contextos, APIs, banco de dados, autenticação, regras de segurança, armazenamento, navegação e responsividade. Verifique especialmente:
+- `src/App.tsx`: estrutura geral, navegação, cabeçalho, menus e ambientes.
+- `src/contexts/AuthContext.tsx`: autenticação, perfil, sincronização e permissões.
+- `src/types.ts`: interfaces, tipos, perfis e modelos de dados.
+- `src/components/DashboardView.tsx`: painel inicial.
+- `src/components/SettingsView.tsx`: configurações.
+- `src/components/VideosView.tsx`: vídeos e aulas.
+- `src/components/PodcastsView.tsx`: podcasts e áudios.
+- `src/components/DisciplinesView.tsx`: disciplinas e organização acadêmica.
+- `src/components/MaterialsView.tsx`: materiais e documentos.
+- `src/components/TeacherConsoleView.tsx`: ambiente docente.
+- `src/components/AdminConsoleView.tsx`: administração.
+- `src/index.css`: identidade visual, estilos e responsividade.
+- `firestore.rules` e `storage.rules`: regras de acesso e armazenamento.
+- `firestore.rules.test.ts`: testes de segurança.
+- `server.ts`: serviços e integrações do backend.
+- `src/data/`: dados acadêmicos, questões, materiais e conteúdos.
+Examine também todos os demais arquivos relacionados às funcionalidades que serão modificadas. Não conclua que um recurso não existe apenas por não encontrar um componente visual: procure sua implementação em serviços, hooks, contextos, banco de dados e backend.
+
+## 3. ARQUITETURA DOS TRÊS AMBIENTES
+A plataforma deverá manter uma única aplicação com três ambientes principais, cada um com permissões e funcionalidades próprias: **ESTUDANTE, PROFESSOR e ADMIN**.
+
+Preserve os papéis internos já existentes, incluindo `student`, `teacher`, `editor`, `admin` e `dev`, quando forem necessários à arquitetura. Não remova nem converta permissões internas sem antes verificar suas responsabilidades. A interface poderá organizar os perfis em três ambientes principais, mas isso não significa eliminar papéis técnicos existentes.
+
+### 3.1. AMBIENTE DO ESTUDANTE
+O estudante deverá ter acesso gratuito aos recursos educacionais disponíveis:
+- Início e painel de estudos.
+- Disciplinas e conteúdos programáticos.
+- Apostilas, PDFs e materiais complementares.
+- Vídeos e aulas.
+- Podcasts e áudios.
+- Questões e banco de questões.
+- Simulados.
+- Rota de estudos.
+- Revisões e caderno de erros.
+- Desempenho e histórico.
+- Sala de estudos.
+- Professor IA.
+- Central de Solicitações Acadêmicas.
+O estudante poderá navegar pelos conteúdos sem precisar realizar pagamento. O cadastro poderá ser utilizado para salvar progresso, histórico, preferências e sincronização entre dispositivos. Não exija autenticação desnecessária para conteúdos públicos. Proteja as operações que exigem identificação individual.
+
+### 3.2. AMBIENTE DO PROFESSOR
+Cada professor deverá possuir autenticação individual e permissões vinculadas às disciplinas e aos conteúdos sob sua responsabilidade. Deverá poder:
+- Visualizar suas disciplinas atribuídas.
+- Cadastrar e enviar materiais.
+- Enviar PDFs, apostilas, vídeos, aulas e podcasts.
+- Associar materiais ao nível, cargo, edital, disciplina e assunto.
+- Identificar e editar títulos, subtítulos, capítulos e recomendações.
+- Organizar a sequência dos conteúdos.
+- Corrigir e atualizar seus próprios materiais.
+- Responder às solicitações dos estudantes.
+- Acompanhar o andamento das solicitações.
+- Consultar o status de aprovação e publicação dos materiais.
+O professor não poderá modificar configurações institucionais, permissões globais ou materiais de outros responsáveis sem autorização administrativa. Materiais enviados deverão possuir status explícito, como rascunho, enviado para análise, aprovado, publicado ou devolvido para correção, conforme o fluxo de aprovação adotado.
+
+### 3.3. AMBIENTE ADMINISTRATIVO
+O administrador deverá ter controle institucional sobre:
+- Usuários e perfis.
+- Professores e suas atribuições.
+- Níveis acadêmicos.
+- Cargos e editais.
+- Disciplinas e conteúdos programáticos.
+- Materiais, PDFs, vídeos e podcasts.
+- Questões e simulados.
+- Publicação e aprovação de conteúdos.
+- Solicitações dos estudantes.
+- Configurações gerais.
+- Permissões e segurança.
+- Histórico de alterações e auditoria.
+O administrador poderá aprovar, editar, publicar, arquivar ou excluir materiais conforme as permissões e regras institucionais. Toda alteração relevante deverá possuir registro de autoria, data, operação e identificação do conteúdo afetado.
+
+## 4. AUTENTICAÇÃO E SEGURANÇA
+Implemente autenticação individual para professores e administradores, utilizando os mecanismos já existentes no Firebase ou na arquitetura atual. Não utilize senha compartilhada fixa, como `12345`, em produção. Uma senha desse tipo somente poderá existir em ambiente isolado de demonstração ou teste, nunca como mecanismo real de proteção. Utilize controle de acesso por função e, quando necessário, por atribuição de disciplina, autoria e propriedade do conteúdo. A autorização deverá ser verificada no backend e nas regras do Firebase, não apenas por condições visuais no frontend.
+Audite especialmente:
+- Firestore Rules.
+- Storage Rules.
+- Validação de propriedade e autoria.
+- Permissões de leitura, criação, edição e exclusão.
+- Acesso indevido a materiais institucionais.
+- Upload e substituição de arquivos.
+- Proteção de rotas e operações.
+- Dados pessoais e informações dos usuários.
+- Integridade dos registros.
+Investigue a regra de armazenamento `campus-materials` e a função `isStaffPathOwner`, verificando se a propriedade do caminho está sendo confundida com autorização funcional. A propriedade de um arquivo ou caminho não deve, isoladamente, conceder permissão a qualquer usuário. Exija verificação de papel e escopo de acesso adequado. Corrija vulnerabilidades comprovadas e escreva testes que demonstrem o bloqueio de acessos indevidos.
+
+## 5. ORGANIZAÇÃO ACADÊMICA E PERSONALIZAÇÃO
+A estrutura de organização dos conteúdos deverá seguir esta hierarquia:
+**NÍVEL ACADÊMICO → CARGO/EDITAL → DISCIPLINA → ASSUNTO → MATERIAL.**
+O estudante deverá selecionar seu nível acadêmico, como Nível Médio ou Nível Superior, e depois o cargo correspondente. Essa seleção é uma configuração acadêmica individual, não um novo perfil de acesso. Deve ser persistida corretamente e permitir alteração posterior.
+A configuração ficará em **Meu Perfil Acadêmico** ou **Configurações Acadêmicas**, acessível pelo menu Mais. Não apresente seletores repetitivos de nível e cargo no painel inicial. O dashboard deverá mostrar a configuração atual de maneira informativa e compacta.
+A alteração do cargo ou edital deverá atualizar os conteúdos exibidos sem apagar o histórico geral, as sessões de estudo, os resultados de simulados, as questões respondidas ou os registros anteriores. Quando necessário, organize o progresso por contexto acadêmico, preservando os dados históricos e evitando misturar resultados de cargos diferentes.
+Verifique se as estruturas existentes, inclusive `concurso_alepa_campus` e `concurso_alepa_medio_cargo`, estão vinculadas corretamente ao perfil e à persistência. Não substitua dados existentes sem migração planejada.
+
+## 6. ORGANIZAÇÃO DO CONTEÚDO DO ESTUDANTE
+Dentro de cada disciplina, apresente o conteúdo programático com assuntos e subassuntos organizados. Cada assunto poderá reunir:
+- Apostila ou PDF.
+- Vídeo-aula.
+- Podcast ou áudio.
+- Questões relacionadas.
+- Simulado ou avaliação.
+- Resumo e recomendações.
+- Revisão.
+- Indicador de progresso.
+O estudante deverá conseguir abrir um assunto e visualizar os materiais relacionados sem precisar procurar em áreas diferentes da plataforma. Utilize vínculos entre os registros existentes sempre que possível. Evite duplicar arquivos, disciplinas, questões ou materiais no banco de dados.
+Apresente indicadores de conteúdo disponível, conteúdo concluído e conteúdo pendente quando houver dados confiáveis. Não invente progresso nem marque material como concluído sem evidência.
+
+## 7. CENTRAL DE SOLICITAÇÕES ACADÊMICAS E CHAT
+Implemente ou complete uma **Central de Solicitações Acadêmicas** para comunicação real entre estudante, professor e administração. O estudante poderá solicitar:
+- Criação ou disponibilização de vídeo-aula.
+- Inclusão de podcast ou áudio.
+- Inclusão de PDF ou apostila.
+- Inclusão de assunto ou subassunto.
+- Correção de material.
+- Correção de questão ou gabarito.
+- Esclarecimento sobre conteúdo.
+- Outros pedidos acadêmicos.
+Cada solicitação deverá conter identificação do estudante, categoria, disciplina, assunto, descrição, data de criação, responsável, status e histórico de mensagens.
+Utilize os seguintes status: **Pendente, Em análise, Aguardando resposta, Respondida e Concluída**. O professor deverá visualizar solicitações relacionadas às suas disciplinas. O administrador deverá visualizar todas, encaminhar, assumir, redistribuir e acompanhar. O estudante deverá acompanhar o andamento e receber respostas dentro da própria plataforma.
+Implemente histórico de mensagens com autoria e data, controle de acesso por participante e notificações quando houver suporte na arquitetura. O chat deverá ser uma comunicação humana real entre os usuários. O Professor IA ou Gemini não deverá substituir o fluxo de atendimento humano.
+
+## 8. SISTEMA INTELIGENTE DE IDENTIFICAÇÃO E EDIÇÃO DE MATERIAIS
+Implemente ou aperfeiçoe um módulo chamado **Identificar e organizar conteúdo**, integrado ao fluxo de envio de PDFs, vídeos e podcasts.
+Ao enviar um arquivo, professor ou administrador deverá poder identificar, revisar e editar:
+- Título principal.
+- Subtítulo.
+- Descrição.
+- Tipo de material.
+- Nível acadêmico.
+- Cargo e edital.
+- Disciplina.
+- Assunto e subassunto.
+- Títulos de capítulos.
+- Tópicos e subtópicos.
+- Recomendações de estudo.
+- Palavras-chave.
+- Referência ao conteúdo programático.
+- Professor ou responsável.
+- Status de publicação.
+### 8.1. PDFs
+Quando tecnicamente possível, analisar o documento e sugerir títulos, subtítulos, capítulos, páginas e sumário. Permitir criar, editar, excluir e reorganizar tópicos, com indicação da página correspondente. Não inventar páginas nem atribuir títulos sem evidência no documento.
+### 8.2. Vídeos
+Permitir identificar título, descrição, capítulos, assuntos, subtítulos, recomendações e marcações de tempo. Os capítulos deverão apontar para o momento correto do vídeo. Caso exista transcrição, utilize-a para sugerir a estrutura. Se não houver transcrição ou evidência suficiente, permita edição manual e não invente timestamps.
+### 8.3. Podcasts e áudios
+Permitir identificar temas, capítulos, descrição, recomendações e marcações de tempo, utilizando transcrição quando disponível. Permitir ajuste manual e revisão do conteúdo sugerido.
+### 8.4. Inteligência artificial assistiva
+A IA poderá sugerir títulos, capítulos, tópicos, palavras-chave, descrições e recomendações com base no conteúdo real do arquivo. Todas as sugestões deverão ser editáveis e passar por revisão humana antes da publicação. Não publique automaticamente conteúdo não revisado. Não invente informações, páginas, timestamps ou referências programáticas.
+### 8.5. Editor de conteúdo
+O professor ou administrador autorizado deverá conseguir clicar em cada item identificado e alterar título, subtítulo, descrição, ordem, página, timestamp e recomendação. Deverá também adicionar ou excluir tópicos e subtópicos. As alterações deverão ser salvas e persistidas, com controle de autoria e histórico de versões quando aplicável.
+### 8.6. Visualização pelo estudante
+O estudante deverá visualizar o material com sumário clicável, capítulos, subtítulos, recomendações e links para materiais relacionados. Ao selecionar um capítulo de PDF, deverá ser direcionado à página correspondente; ao selecionar capítulo de vídeo ou podcast, deverá iniciar no timestamp correto. A plataforma deverá relacionar os materiais ao assunto correspondente.
+
+## 9. EXPERIÊNCIA MOBILE — PLAYER INTERNO OU APLICATIVO EXTERNO
+Ao selecionar um vídeo, aula, podcast ou áudio no celular, o estudante deverá escolher onde deseja reproduzir o conteúdo.
+Apresente uma janela simples com duas opções:
+1. **Reproduzir no próprio Meu Campus:** abre o player integrado à plataforma.
+2. **Abrir em outro aplicativo:** tenta encaminhar o conteúdo ao aplicativo compatível ou navegador externo.
+A escolha deverá ocorrer no momento da seleção do conteúdo. Inclua a opção de preferência:
+- Perguntar sempre.
+- Preferir player interno.
+- Preferir aplicativo externo.
+A preferência poderá ser alterada posteriormente nas configurações, mas o estudante deverá poder escolher outro modo individualmente em cada conteúdo.
+### 9.1. Player interno de vídeo
+Implementar interface responsiva, controles de reprodução e pausa, avanço e retrocesso, controle de volume, tela cheia, velocidade de reprodução, retomada do ponto anterior e legendas quando disponíveis. Implementar Picture-in-Picture quando suportado pelo navegador e dispositivo. Adaptar a interface a telas pequenas e orientações retrato e paisagem.
+### 9.2. Player interno de áudio e podcast
+Implementar reprodução em segundo plano quando suportada, barra de progresso, avanço e retrocesso, velocidade de 0,75x a 2x, retomada do ponto anterior e temporizador de desligamento quando tecnicamente viável. Utilizar Media Session API quando disponível para controles na tela bloqueada, notificações e botões físicos de mídia.
+### 9.3. Reprodução externa
+Identificar a origem e o formato do conteúdo. Quando houver suporte, permitir abrir no aplicativo correspondente, como YouTube, Spotify, player de áudio/vídeo ou navegador. Não presuma que determinado aplicativo está instalado. Utilize links e esquemas compatíveis, com fallback seguro para navegador. Se não houver possibilidade de abrir em aplicativo externo, informe claramente e ofereça a reprodução interna.
+### 9.4. Registro de progresso
+Salvar o progresso do player interno de forma confiável. Na reprodução externa, não registrar como assistido o tempo que não puder ser comprovado. Registrar apenas o evento de abertura externa, quando aplicável, e preservar o último progresso confiável. Evitar perda ou duplicação de histórico.
+### 9.5. Compatibilidade
+Testar Android, iOS, PWA e navegadores suportados. Picture-in-Picture, reprodução em segundo plano, Media Session API e abertura em aplicativos externos dependem do navegador, sistema operacional, formato e permissões. Implementar detecção de suporte e fallback. Não prometer funções que o dispositivo não oferece.
+
+## 10. MODERNIZAÇÃO DA INTERFACE E NAVEGAÇÃO
+Manter a identidade visual institucional do projeto, com fundo azul-marinho escuro, detalhes em verde ou azul-petróleo, cartões discretos, bordas sutis, ícones padronizados, tipografia legível e hierarquia visual consistente. Não alterar a identidade sem necessidade.
+### 10.1. Cabeçalho
+Organizar o cabeçalho com título **Meu Campus ALEPA** alinhado à esquerda e ícone de perfil à direita. Avaliar a remoção do menu hambúrguer quando ele duplicar a navegação inferior. Organizar Tema Claro, Compartilhar e Instalar App nas configurações ou no menu Mais. Avaliar ocultação do cabeçalho durante rolagem para baixo e reaparecimento durante rolagem para cima, sem prejudicar acessibilidade.
+### 10.2. Navegação inferior
+No ambiente do estudante, utilizar cinco opções principais:
+1. Início.
+2. Conteúdo.
+3. Questões.
+4. Vídeos.
+5. Mais.
+A navegação deverá permanecer fixa no modo retrato, com indicação clara da opção ativa, ícones e rótulos, espaçamento adequado e respeito às áreas seguras do dispositivo. Não duplicar recursos sem necessidade.
+### 10.3. Menu Mais
+Organizar em lista compacta com divisórias discretas e rolagem interna:
+**Principais recursos:** Conteúdo; Vídeos e aulas; Podcasts; Questões e simulados.
+**Minha preparação:** Minha rota de estudos; Sala de estudos; Professor IA; Revisões e erros; Desempenho.
+**Gestão e configurações:** Meu Perfil Acadêmico; Configurações; Tema Claro; Compartilhar; Instalar App.
+Exibir somente opções autorizadas para cada perfil. Evitar cartões grandes, excesso de informações e duplicidade com a navegação inferior.
+### 10.4. Painel inicial
+Priorizar a atividade de estudo. Exibir saudação, continuação da última atividade, ambiente do estudante, acesso a conteúdos, questões, vídeos, podcasts, Professor IA, desempenho e revisões. Não apresentar repetidamente seletores de nível ou cargo. Reorganizar elementos existentes sem eliminar recursos úteis.
+
+## 11. RESPONSIVIDADE E ACESSIBILIDADE
+Validar a interface nas larguras de 320, 360, 390 e 430 px, tablets e desktops, nos modos retrato e paisagem. Verificar textos cortados, sobreposição, rolagem horizontal indevida, cartões grandes, menus incompatíveis, teclado virtual, contraste, legibilidade e áreas de toque.
+No modo retrato, manter a navegação inferior fixa. No modo paisagem, avaliar sua transformação em barra lateral compacta, com ícones de pelo menos 24 × 24 px e áreas de toque de pelo menos 48 × 48 px. Respeitar `safe-area-inset` e o espaço ocupado pelo teclado virtual. Não esconder campos, botões ou controles essenciais. Garantir navegação por teclado, rótulos acessíveis, foco visível, contraste adequado e semântica correta.
+
+## 12. INTEGRIDADE, PERSISTÊNCIA E FUNCIONALIDADES EXISTENTES
+Verificar todos os recursos existentes e sua integração:
+- `users`.
+- `topicProgress`.
+- `studySessions`.
+- `simuladoAttempts`.
+- `errorNotebook`.
+- `disciplineGoals`.
+- `materials`.
+- `sharedQuestions`.
+- `classes`.
+- `enrollments`.
+- `lessons`.
+- `activities`.
+- `submissions`.
+Preserve a estrutura existente sempre que possível. Antes de criar coleções ou campos, verifique se a finalidade já está atendida por estruturas existentes. Não duplique informações nem crie fontes concorrentes de dados. Verifique se o frontend e backend utilizam os mesmos modelos e regras.
+Preserve o histórico de estudo, resultados, questões respondidas, sessões, materiais e registros. Se for necessário alterar o modelo de dados, crie migração compatível, documentada, reversível quando possível e sem apagar registros anteriores. Não substitua dados reais por dados fictícios.
+
+## 13. AUDITORIA DE FUNCIONALIDADES
+Teste efetivamente botões, menus, links, seletores, formulários, uploads, players, filtros, navegação, autenticação e persistência. Identifique:
+- Rotas inexistentes.
+- Links quebrados.
+- Botões sem ação.
+- Funcionalidades duplicadas.
+- Componentes sem utilização.
+- Dados fictícios ou estáticos.
+- Informações não persistidas.
+- Falhas de sincronização.
+- Falhas na alteração de cargo ou edital.
+- Perda de histórico.
+- Erros de autorização.
+- Problemas de integração frontend/backend.
+- Uploads sem validação.
+- Materiais sem vínculo acadêmico.
+- Solicitações sem histórico.
+- Publicação sem controle de status.
+Não considere um recurso funcional apenas porque existe um botão ou componente visual. Diferencie implementação encontrada, funcionamento comprovado e funcionalidade apenas planejada.
+
+## 14. CLASSIFICAÇÃO DOS ACHADOS
+Classifique cada problema:
+- **CONFORME:** atende ao requisito e possui evidência.
+- **PARCIALMENTE CONFORME:** implementado, mas incompleto.
+- **NÃO CONFORME:** existe, mas apresenta falhas.
+- **NÃO IMPLEMENTADO:** não foi encontrado.
+- **NÃO FOI POSSÍVEL VERIFICAR:** não há condições ou evidências suficientes.
+Classifique a prioridade:
+- **P0 — Crítica:** risco de segurança, perda de dados ou comprometimento de função essencial.
+- **P1 — Alta:** prejudica diretamente o funcionamento.
+- **P2 — Média:** afeta organização, navegação ou experiência.
+- **P3 — Baixa:** refinamento visual ou melhoria complementar.
+
+## 15. PLANO DE CORREÇÃO E ORDEM DE EXECUÇÃO
+Execute o trabalho em etapas, respeitando dependências:
+**ETAPA 1 — Auditoria e diagnóstico:** mapear arquitetura, funcionalidades, permissões, dependências e problemas. Produzir matriz de conformidade com evidências e caminhos dos arquivos.
+**ETAPA 2 — Segurança e integridade:** corrigir problemas comprovados de autenticação, autorização, Firestore Rules, Storage Rules, validação de uploads e preservação dos dados. Criar ou atualizar testes de segurança.
+**ETAPA 3 — Estrutura acadêmica e perfis:** ajustar relações entre nível, cargo, edital, disciplinas, assuntos e materiais; garantir persistência e histórico.
+**ETAPA 4 — Ambientes de acesso:** organizar Estudante, Professor e Admin, mantendo os papéis internos e aplicando permissões no frontend e backend.
+**ETAPA 5 — Conteúdo e solicitações:** implementar ou completar Central de Solicitações Acadêmicas, fluxo de mensagens, atribuição de responsáveis e estados.
+**ETAPA 6 — Gestão inteligente de materiais:** implementar identificação, editor, capítulos, subtítulos, timestamps, páginas, recomendações e revisão humana.
+**ETAPA 7 — Player mobile:** implementar escolha de reprodução interna ou externa, preferências, controles, retomada e progresso confiável.
+**ETAPA 8 — Interface e navegação:** modernizar cabeçalho, navegação inferior, menu Mais e dashboard, sem eliminar funcionalidades.
+**ETAPA 9 — Responsividade e acessibilidade:** corrigir layout para celulares, tablets, desktop, retrato e paisagem.
+**ETAPA 10 — Testes e estabilização:** executar build, testes automatizados, verificações de tipos, lint quando configurado e testes funcionais. Corrigir regressões antes de concluir.
+
+## 16. REGRAS OBRIGATÓRIAS DE DESENVOLVIMENTO
+1. Faça uma cópia de segurança ou utilize controle de versão antes de alterações relevantes.
+2. Não sobrescreva arquivos sem compreender sua função.
+3. Não recrie componentes que já funcionam.
+4. Não remova recursos existentes para simplificar a interface.
+5. Não crie perfis de acesso adicionais sem justificativa arquitetural.
+6. Não altere regras de negócio sem explicar a necessidade.
+7. Não introduza dependências desnecessárias.
+8. Não exponha chaves, tokens, senhas ou segredos.
+9. Não utilize autenticação compartilhada em produção.
+10. Não deixe botões decorativos sem ação.
+11. Não use dados simulados como se fossem dados reais.
+12. Não marque conteúdo como concluído sem evidência.
+13. Não publique materiais sem respeitar o fluxo de aprovação.
+14. Não permita que professor acesse materiais fora de seu escopo.
+15. Não permita que estudante edite conteúdos institucionais.
+16. Não confie apenas na interface para aplicar permissões.
+17. Não apague histórico durante migrações.
+18. Não invente páginas, capítulos, timestamps ou transcrições.
+19. Não declare testes aprovados sem executá-los.
+20. Não declare uma integração funcional sem verificar sua execução.
+21. Preserve compatibilidade com a arquitetura e os dados existentes.
+22. Documente arquivos modificados, decisões técnicas e eventuais limitações.
+23. Se encontrar um problema fora do escopo, registre-o antes de alterar.
+24. Se uma mudança envolver risco de perda de dados, faça backup e proponha migração segura.
+25. Se uma funcionalidade depender de serviço externo, verifique configuração, credenciais, limites e disponibilidade antes de declarar conclusão.
+
+## 17. TESTES OBRIGATÓRIOS
+Executar, conforme os recursos disponíveis:
+- Instalação e validação das dependências.
+- Build de produção.
+- Verificação TypeScript.
+- Lint, se configurado.
+- Testes automatizados existentes.
+- Testes das regras do Firestore e Storage.
+- Login e logout dos três ambientes.
+- Verificação de permissões por perfil.
+- Cadastro e edição de materiais.
+- Upload e leitura de PDFs.
+- Upload e reprodução de vídeos e podcasts.
+- Identificação e edição de capítulos.
+- Solicitação e resposta entre estudante e professor.
+- Aprovação e publicação administrativa.
+- Persistência da configuração acadêmica.
+- Preservação do histórico após mudança de cargo.
+- Reprodução interna e abertura externa.
+- Retomada do progresso.
+- Responsividade em diferentes larguras e orientações.
+- Instalação e comportamento PWA.
+Registre os resultados como **APROVADO, REPROVADO ou NÃO EXECUTADO**. Informe o comando executado, o resultado e eventuais erros. Se não houver dispositivo ou ambiente disponível para teste visual real, não declare que o teste foi realizado.
+
+## 18. ENTREGA FINAL OBRIGATÓRIA
+Ao terminar, apresente:
+1. Diagnóstico inicial e nível de conformidade.
+2. Matriz de auditoria com requisito, situação, evidência, arquivo, problema, correção e prioridade.
+3. Lista das funcionalidades preservadas.
+4. Lista das falhas corrigidas.
+5. Lista das funcionalidades complementadas ou implementadas.
+6. Relação de arquivos criados, alterados e removidos, justificando cada remoção.
+7. Alterações realizadas no banco de dados e migrações.
+8. Alterações nas regras de segurança.
+9. Resultado dos testes, incluindo os não executados.
+10. Limitações técnicas ainda existentes.
+11. Riscos pendentes.
+12. Recomendações para a próxima evolução do projeto.
+
+## 19. CRITÉRIO DE CONCLUSÃO
+O projeto somente poderá ser considerado concluído quando as alterações previstas estiverem implementadas, os dados existentes preservados, as permissões verificadas, as funcionalidades principais testadas e o build validado. Não confunda código escrito com funcionalidade comprovada. Não oculte falhas ou testes pendentes.
+
+**OBJETIVO FINAL:** entregar um Meu Campus ALEPA 2026 moderno, seguro, organizado e responsivo, com três ambientes bem definidos, conteúdo acadêmico estruturado, gestão inteligente de materiais, comunicação entre estudantes e professores, player mobile com escolha de reprodução e preservação integral das funcionalidades e dados que já existem.
+
+**INSTRUÇÃO FINAL À IA:** comece examinando o repositório e produza o diagnóstico técnico. Em seguida, execute as correções por etapas, sem interromper o trabalho apenas para apresentar recomendações, desde que as alterações sejam seguras e estejam dentro deste escopo. Se encontrar risco de perda de dados, mudança irreversível, necessidade de credenciais externas ou decisão institucional que não possa ser inferida, interrompa somente essa operação específica, explique o risco e continue as demais tarefas independentes. Ao final de cada etapa, registre o que foi alterado e os testes realizados. Não declare sucesso sem evidências.

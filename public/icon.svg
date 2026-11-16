@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B3321" />
+      <stop offset="100%" stop-color="#145335" />
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34D399" />
+      <stop offset="100%" stop-color="#10B981" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="108" fill="url(#bgGrad)" />
+  <rect x="24" y="24" width="464" height="464" rx="90" fill="none" stroke="#34D399" stroke-opacity="0.22" stroke-width="4" />
+
+  <!-- Top pediment / Legislative roof -->
+  <path d="M256 108 L380 166 L132 166 Z" fill="url(#accentGrad)" />
+  <rect x="128" y="176" width="256" height="18" rx="6" fill="#ECFDF5" />
+
+  <!-- Three legislative pillars -->
+  <rect x="156" y="206" width="32" height="106" rx="8" fill="#ECFDF5" />
+  <rect x="240" y="206" width="32" height="106" rx="8" fill="#ECFDF5" />
+  <rect x="324" y="206" width="32" height="106" rx="8" fill="#ECFDF5" />
+
+  <!-- Open study book base -->
+  <path d="M112 326 C168 318 220 330 256 352 C292 330 344 318 400 326 L400 392 C344 384 292 396 256 416 C220 396 168 384 112 392 Z" fill="url(#accentGrad)" />
+  <path d="M126 336 C174 330 220 340 256 360 C292 340 338 330 386 336 L386 380 C338 374 292 384 256 402 C220 384 174 374 126 380 Z" fill="#FFFFFF" />
+  <rect x="252" y="352" width="8" height="54" rx="4" fill="#0B3321" />
+</svg>

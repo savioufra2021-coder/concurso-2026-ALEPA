@@ -1,0 +1,66 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isSignedIn() {
+      return request.auth != null && request.auth.token.email_verified == true;
+    }
+
+    function isPrimaryAdminEmail() {
+      return isSignedIn()
+        && request.auth.token.email is string
+        && request.auth.token.email.lower() in [
+          'saviobaia6@gmail.com',
+          'saviobaiax5@gmail.com',
+          'legcmp.dle@gmail.com',
+          'alfaservicosgraficosx5@gmail.com'
+        ];
+    }
+
+    function isStaffUploader(uid) {
+      return isSignedIn()
+        && request.auth.uid == uid
+        && firestore.exists(/databases/ai-studio-remixsavioalepa1-e4693aba-b1f3-4621-bddd-0813ec8e3b3f/documents/users/$(request.auth.uid))
+        && firestore.get(/databases/ai-studio-remixsavioalepa1-e4693aba-b1f3-4621-bddd-0813ec8e3b3f/documents/users/$(request.auth.uid)).data.role in ['admin', 'dev', 'editor', 'teacher']
+        && firestore.get(/databases/ai-studio-remixsavioalepa1-e4693aba-b1f3-4621-bddd-0813ec8e3b3f/documents/users/$(request.auth.uid)).data.active != false;
+    }
+
+    function isAllowedCampusMimeType() {
+      return request.resource.contentType is string
+        && request.resource.contentType.matches('application/pdf|application/epub\\+zip|video/.*|audio/.*|image/.*|application/vnd\\.openxmlformats-officedocument\\.(presentationml\\.presentation|spreadsheetml\\.sheet)');
+    }
+
+    function isAllowedUserMimeType() {
+      return request.resource.contentType is string
+        && request.resource.contentType.matches('application/pdf|application/epub\\+zip|video/.*|audio/.*|image/.*');
+    }
+
+    // Biblioteca institucional e arquivos administrativos (PDFs, áudios, vídeos, imagens até 100 MB)
+    match /campus-materials/{uploaderUid}/{allPaths=**} {
+      allow read: if isSignedIn();
+      allow write: if (isPrimaryAdminEmail() || isStaffUploader(uploaderUid))
+        && (
+          request.resource == null ||
+          (request.resource.size > 0
+            && request.resource.size <= 100 * 1024 * 1024
+            && isAllowedCampusMimeType())
+        );
+    }
+
+    // Materiais pessoais / cadernos do próprio usuário (até 50 MB)
+    match /user-uploads/{userId}/{allPaths=**} {
+      allow read: if isSignedIn() && (request.auth.uid == userId || isPrimaryAdminEmail());
+      allow write: if isSignedIn() && request.auth.uid == userId
+        && (
+          request.resource == null ||
+          (request.resource.size > 0
+            && request.resource.size <= 50 * 1024 * 1024
+            && isAllowedUserMimeType())
+        );
+    }
+
+    // Bloqueio padrão para qualquer outro caminho
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
