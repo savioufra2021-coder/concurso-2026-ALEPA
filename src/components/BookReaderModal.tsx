@@ -1172,6 +1172,25 @@ export function BookReaderModal({
     [pdfDoc, goToPage]
   );
 
+  // Live debounced search as user types
+  useEffect(() => {
+    const trimmed = searchQuery.trim();
+    if (trimmed.length < 2) {
+      setSearchHits([]);
+      setSearching(false);
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      void runSearch(trimmed);
+    }, 300);
+    return () => window.clearTimeout(timer);
+  }, [searchQuery, runSearch]);
+
+  const totalMatchCount = useMemo(
+    () => searchHits.reduce((acc, h) => acc + h.matchCount, 0),
+    [searchHits]
+  );
+
   // Automatically trigger deep-link search if initialSearchQuery is supplied
   useEffect(() => {
     if (loadingDoc || loadError || (!pdfDoc && !structuredBook)) return;
@@ -1834,22 +1853,35 @@ export function BookReaderModal({
                 type="search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Buscar palavra no documento..."
-                className={`flex-1 min-h-[38px] px-2.5 py-1.5 rounded-lg border text-xs bg-transparent ${themeStyle.border}`}
+                placeholder="Digite a palavra para buscar..."
+                className={`flex-1 min-h-[38px] px-3 py-1.5 rounded-lg border text-xs bg-transparent ${themeStyle.border}`}
               />
               <button
                 type="submit"
                 disabled={searching || searchQuery.trim().length < 2}
                 className="min-h-[38px] px-3 bg-[#0B3321] text-white font-semibold rounded-lg disabled:opacity-50"
               >
-                {searching ? '...' : 'Ir'}
+                {searching ? '...' : 'Buscar'}
               </button>
             </form>
+
+            {searchQuery.trim().length >= 2 && !searching && (
+              <div className="px-1 text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 flex items-center justify-between">
+                <span>
+                  {searchHits.length > 0
+                    ? `Encontradas ${totalMatchCount} ${totalMatchCount === 1 ? 'ocorrência' : 'ocorrências'} em ${searchHits.length} ${searchHits.length === 1 ? 'página' : 'páginas'}`
+                    : `Nenhuma ocorrência encontrada`}
+                </span>
+                {searchHits.length > 0 && (
+                  <span className="text-[10px] text-slate-400">Clique para ir à página</span>
+                )}
+              </div>
+            )}
 
             {searching ? (
               <div className="py-4 flex items-center gap-2 text-xs">
                 <Loader2 className="w-4 h-4 animate-spin text-[#146C43]" />
-                <span>Pesquisando páginas do PDF...</span>
+                <span>Buscando nas páginas do documento...</span>
               </div>
             ) : searchQuery.trim().length >= 2 && searchHits.length === 0 ? (
               <p className={themeStyle.textMuted}>
@@ -1863,17 +1895,30 @@ export function BookReaderModal({
                     type="button"
                     onClick={() => {
                       goToPage(hit.pageNumber);
+                      if (!structuredBook) {
+                        setReadingMode('reading');
+                      }
                       if (!viewportSize.isDesktop) setPanelOpen(false);
                     }}
-                    className={`w-full text-left p-2.5 rounded-xl border ${themeStyle.border} hover:border-[#146C43] space-y-1`}
+                    className={`w-full text-left p-3 rounded-xl border ${themeStyle.border} hover:border-[#146C43] hover:bg-emerald-50/30 dark:hover:bg-emerald-950/20 transition-colors space-y-1.5`}
                   >
-                    <div className="flex items-center justify-between font-mono text-[11px] font-bold text-[#146C43]">
-                      <span>Página {hit.pageNumber}</span>
-                      <span>
-                        {hit.matchCount} {hit.matchCount === 1 ? 'ocorrência' : 'ocorrências'}
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-md">
+                        Palavra: "{searchQuery}"
+                      </span>
+                      <span className="font-mono text-[11px] font-bold text-[#146C43] dark:text-emerald-400">
+                        Página {hit.pageNumber}
                       </span>
                     </div>
-                    <p className="text-[11px] leading-relaxed line-clamp-3">{hit.snippet}</p>
+                    <div className="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 font-medium">
+                      <span>
+                        {hit.matchCount} {hit.matchCount === 1 ? 'ocorrência nesta página' : 'ocorrências nesta página'}
+                      </span>
+                      <span className="text-[#146C43] dark:text-emerald-400 font-semibold underline">Ir para a página &rarr;</span>
+                    </div>
+                    <p className="text-[11px] leading-relaxed line-clamp-3 text-slate-700 dark:text-slate-300 font-sans">
+                      {hit.snippet}
+                    </p>
                   </button>
                 ))}
               </div>
@@ -2788,26 +2833,28 @@ export function BookReaderModal({
       {/* Bottom Navigation & Progress Footer */}
       {!cleanReading && !loadingDoc && !loadError && (pdfDoc || structuredBook) && (
         <footer className={`border-t px-3 sm:px-5 py-2.5 flex flex-wrap items-center justify-between gap-3 ${themeStyle.headerBg}`}>
-          <div className="flex items-center gap-1.5">
-            <button
-              type="button"
-              disabled={currentPage <= 1}
-              onClick={goPrev}
-              className="min-h-[44px] sm:min-h-[38px] px-3 rounded-xl border border-current/15 hover:bg-slate-500/10 disabled:opacity-40 text-xs font-semibold inline-flex items-center gap-1"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              <span className="hidden sm:inline">Anterior</span>
-            </button>
-            <button
-              type="button"
-              disabled={currentPage + (useTwoPageSpread ? 1 : 0) >= numPages}
-              onClick={goNext}
-              className="min-h-[44px] sm:min-h-[38px] px-3 rounded-xl bg-[#0B3321] text-white disabled:opacity-40 text-xs font-semibold inline-flex items-center gap-1"
-            >
-              <span className="hidden sm:inline">Próxima</span>
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
+          {(!isFullscreen && !expandedActive) && (
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                disabled={currentPage <= 1}
+                onClick={goPrev}
+                className="min-h-[44px] sm:min-h-[38px] px-3 rounded-xl border border-current/15 hover:bg-slate-500/10 disabled:opacity-40 text-xs font-semibold inline-flex items-center gap-1"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                <span className="hidden sm:inline">Anterior</span>
+              </button>
+              <button
+                type="button"
+                disabled={currentPage + (useTwoPageSpread ? 1 : 0) >= numPages}
+                onClick={goNext}
+                className="min-h-[44px] sm:min-h-[38px] px-3 rounded-xl bg-[#0B3321] text-white disabled:opacity-40 text-xs font-semibold inline-flex items-center gap-1"
+              >
+                <span className="hidden sm:inline">Próxima</span>
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          )}
 
           <div className="flex-1 min-w-[160px] max-w-md flex items-center gap-3">
             <input
